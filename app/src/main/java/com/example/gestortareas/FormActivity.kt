@@ -18,6 +18,9 @@ class FormActivity : AppCompatActivity() {
     // Repositorio encargado de guardar las tareas en Firebase.
     private lateinit var taskRepository: FirebaseTaskRepository
 
+    private var taskId: String? = null
+    private var isEditMode = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_form)
@@ -29,8 +32,10 @@ class FormActivity : AppCompatActivity() {
         btnSaveTask = findViewById(R.id.btnSaveTask)
         btnBack = findViewById(R.id.btnBack)
 
+        loadTaskDataIfEditing()
         configureSaveButton()
         configureBackButton()
+
     }
 
     private fun configureSaveButton() {
@@ -59,17 +64,57 @@ class FormActivity : AppCompatActivity() {
             return
         }
 
+        btnSaveTask.isEnabled = false
+
+        if (isEditMode) {
+            updateExistingTask(name, description)
+        } else {
+            createNewTask(name, description)
+        }
+    }
+    private fun loadTaskDataIfEditing() {
+        taskId = intent.getStringExtra("task_id")
+
+        val taskName = intent.getStringExtra("task_name")
+        val taskDescription = intent.getStringExtra("task_description")
+
+        if (!taskId.isNullOrEmpty()) {
+            isEditMode = true
+            etTaskName.setText(taskName)
+            etTaskDescription.setText(taskDescription)
+            btnSaveTask.text = "Actualizar Tarea"
+        }
+    }
+    private fun createNewTask(name: String, description: String) {
         val task = Task(
             name = name,
             description = description
         )
 
-        btnSaveTask.isEnabled = false
-
         taskRepository.saveTask(
             task = task,
             onSuccess = {
                 Toast.makeText(this, "Tarea guardada correctamente", Toast.LENGTH_SHORT).show()
+                finish()
+            },
+            onError = { message ->
+                btnSaveTask.isEnabled = true
+                Toast.makeText(this, message, Toast.LENGTH_LONG).show()
+            }
+        )
+    }
+
+    private fun updateExistingTask(name: String, description: String) {
+        val task = Task(
+            id = taskId ?: "",
+            name = name,
+            description = description
+        )
+
+        taskRepository.updateTask(
+            task = task,
+            onSuccess = {
+                Toast.makeText(this, "Tarea actualizada correctamente", Toast.LENGTH_SHORT).show()
                 finish()
             },
             onError = { message ->

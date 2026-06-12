@@ -59,7 +59,67 @@ class FirebaseTaskRepository {
                 onError(exception.message ?: "Error al guardar la tarea")
             }
     }
+    // Actualiza una tarea existente en Firebase usando su ID.
+    fun updateTask(
+        task: Task,
+        onSuccess: () -> Unit,
+        onError: (String) -> Unit
+    ) {
+        val uid = getCurrentUserId()
 
+        if (uid == null) {
+            onError("No hay un usuario autenticado")
+            return
+        }
+
+        if (task.id.isEmpty()) {
+            onError("No se encontró el ID de la tarea")
+            return
+        }
+
+        database
+            .child("tasks")
+            .child(uid)
+            .child(task.id)
+            .setValue(task)
+            .addOnSuccessListener {
+                onSuccess()
+            }
+            .addOnFailureListener { exception ->
+                onError(exception.message ?: "Error al actualizar la tarea")
+            }
+    }
+
+    // Elimina una tarea de Firebase usando el ID de la tarea.
+    fun deleteTask(
+        taskId: String,
+        onSuccess: () -> Unit,
+        onError: (String) -> Unit
+    ) {
+        val uid = getCurrentUserId()
+
+        if (uid == null) {
+            onError("No hay un usuario autenticado")
+            return
+        }
+
+        if (taskId.isEmpty()) {
+            onError("No se encontró el ID de la tarea")
+            return
+        }
+
+        database
+            .child("tasks")
+            .child(uid)
+            .child(taskId)
+            .removeValue()
+            .addOnSuccessListener {
+                onSuccess()
+            }
+            .addOnFailureListener { exception ->
+                onError(exception.message ?: "Error al eliminar la tarea")
+            }
+    }
     // Escucha en tiempo real las tareas del usuario autenticado.
     // Cada vez que se agrega, cambia o elimina una tarea, Firebase actualiza la lista.
     fun listenTasks(

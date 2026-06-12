@@ -9,6 +9,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.ValueEventListener
+import androidx.appcompat.app.AlertDialog
 
 // MainActivity representa la pantalla principal de la aplicación.
 // Desde aquí se muestra la lista de tareas guardadas en Firebase,
@@ -28,6 +29,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var listTasks: ListView
     private lateinit var btnAddTask: Button
     private lateinit var btnLogout: Button
+    private val currentTasks = mutableListOf<Task>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,6 +52,7 @@ class MainActivity : AppCompatActivity() {
 
         configureAddTaskButton()
         configureLogoutButton()
+        configureTaskListClick()
         loadTasksFromFirebase()
     }
 
@@ -78,6 +81,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun showTasks(tasks: List<Task>) {
+        currentTasks.clear()
+        currentTasks.addAll(tasks)
+
         val taskTexts = if (tasks.isEmpty()) {
             listOf("No hay tareas guardadas")
         } else {
@@ -116,5 +122,60 @@ class MainActivity : AppCompatActivity() {
         if (::taskRepository.isInitialized) {
             taskRepository.removeTasksListener(taskListener)
         }
+    }
+    private fun configureTaskListClick() {
+        listTasks.setOnItemClickListener { _, _, position, _ ->
+            if (currentTasks.isEmpty()) {
+                return@setOnItemClickListener
+            }
+
+            val selectedTask = currentTasks[position]
+            showTaskOptionsDialog(selectedTask)
+        }
+    }
+
+    private fun showTaskOptionsDialog(task: Task) {
+        AlertDialog.Builder(this)
+            .setTitle(task.name)
+            .setMessage("Selecciona una acción para esta tarea.")
+            .setPositiveButton("Editar") { _, _ ->
+                goToEditTask(task)
+            }
+            .setNegativeButton("Eliminar") { _, _ ->
+                confirmDeleteTask(task)
+            }
+            .setNeutralButton("Cancelar", null)
+            .show()
+    }
+
+    private fun goToEditTask(task: Task) {
+        val intent = Intent(this, FormActivity::class.java)
+        intent.putExtra("task_id", task.id)
+        intent.putExtra("task_name", task.name)
+        intent.putExtra("task_description", task.description)
+        startActivity(intent)
+    }
+
+    private fun confirmDeleteTask(task: Task) {
+        AlertDialog.Builder(this)
+            .setTitle("Eliminar tarea")
+            .setMessage("¿Deseas eliminar la tarea \"${task.name}\"?")
+            .setPositiveButton("Eliminar") { _, _ ->
+                deleteTask(task)
+            }
+            .setNegativeButton("Cancelar", null)
+            .show()
+    }
+
+    private fun deleteTask(task: Task) {
+        taskRepository.deleteTask(
+            taskId = task.id,
+            onSuccess = {
+                Toast.makeText(this, "Tarea eliminada correctamente", Toast.LENGTH_SHORT).show()
+            },
+            onError = { message ->
+                Toast.makeText(this, message, Toast.LENGTH_LONG).show()
+            }
+        )
     }
 }
