@@ -5,6 +5,7 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import android.widget.TextView
 
 // FormActivity representa la pantalla donde el usuario crea una nueva tarea.
 // Los datos ingresados se guardan en Firebase Realtime Database.
@@ -14,6 +15,7 @@ class FormActivity : AppCompatActivity() {
     private lateinit var etTaskDescription: EditText
     private lateinit var btnSaveTask: Button
     private lateinit var btnBack: Button
+    private lateinit var tvFormTitle: TextView
 
     // Repositorio encargado de guardar las tareas en Firebase.
     private lateinit var taskRepository: FirebaseTaskRepository
@@ -31,6 +33,7 @@ class FormActivity : AppCompatActivity() {
         etTaskDescription = findViewById(R.id.etTaskDescription)
         btnSaveTask = findViewById(R.id.btnSaveTask)
         btnBack = findViewById(R.id.btnBack)
+        tvFormTitle = findViewById(R.id.tvFormTitle)
 
         loadTaskDataIfEditing()
         configureSaveButton()
@@ -82,7 +85,8 @@ class FormActivity : AppCompatActivity() {
             isEditMode = true
             etTaskName.setText(taskName)
             etTaskDescription.setText(taskDescription)
-            btnSaveTask.text = "Actualizar Tarea"
+            btnSaveTask.text = "Actualizar tarea"
+            tvFormTitle.text = "Editar tarea"
         }
     }
     private fun createNewTask(name: String, description: String) {

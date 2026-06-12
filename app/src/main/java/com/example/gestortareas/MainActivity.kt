@@ -10,6 +10,8 @@ import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.ValueEventListener
 import androidx.appcompat.app.AlertDialog
+import android.view.View
+import android.widget.TextView
 
 // MainActivity representa la pantalla principal de la aplicación.
 // Desde aquí se muestra la lista de tareas guardadas en Firebase,
@@ -30,6 +32,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var btnAddTask: Button
     private lateinit var btnLogout: Button
     private lateinit var btnOpenMap: Button
+    private lateinit var tvUserEmail: TextView
+    private lateinit var tvEmptyState: TextView
     private val currentTasks = mutableListOf<Task>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -51,6 +55,10 @@ class MainActivity : AppCompatActivity() {
         btnAddTask = findViewById(R.id.btnAddTask)
         btnLogout = findViewById(R.id.btnLogout)
         btnOpenMap = findViewById(R.id.btnOpenMap)
+        tvUserEmail = findViewById(R.id.tvUserEmail)
+        tvEmptyState = findViewById(R.id.tvEmptyState)
+
+        tvUserEmail.text = "Sesión: ${auth.currentUser?.email ?: "Usuario autenticado"}"
 
         configureAddTaskButton()
         configureLogoutButton()
@@ -87,12 +95,17 @@ class MainActivity : AppCompatActivity() {
         currentTasks.clear()
         currentTasks.addAll(tasks)
 
-        val taskTexts = if (tasks.isEmpty()) {
-            listOf("No hay tareas guardadas")
-        } else {
-            tasks.map { task ->
-                "${task.name}\n${task.description}"
-            }
+        if (tasks.isEmpty()) {
+            tvEmptyState.visibility = View.VISIBLE
+            listTasks.visibility = View.GONE
+            return
+        }
+
+        tvEmptyState.visibility = View.GONE
+        listTasks.visibility = View.VISIBLE
+
+        val taskTexts = tasks.map { task ->
+            "${task.name}\n${task.description}"
         }
 
         val adapter = ArrayAdapter(

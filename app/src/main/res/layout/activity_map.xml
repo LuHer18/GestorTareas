@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="#F5F7FA">
+    android:background="@drawable/bg_screen">
 
     <TextView
         android:id="@+id/tvMapTitle"
@@ -13,9 +13,20 @@
         android:text="Mi ubicación actual"
         android:textSize="24sp"
         android:textStyle="bold"
-        android:textColor="#1F2937"
+        android:textColor="@color/text_primary"
         android:gravity="center"
-        android:padding="16dp" />
+        android:paddingTop="18dp"
+        android:paddingBottom="4dp" />
+
+    <TextView
+        android:id="@+id/tvMapSubtitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Mapa generado con Google Maps API"
+        android:textSize="14sp"
+        android:textColor="@color/text_secondary"
+        android:gravity="center"
+        android:paddingBottom="12dp" />
 
     <fragment
         android:id="@+id/mapFragment"
@@ -29,6 +40,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Volver"
+        android:textSize="16sp"
+        android:textColor="#FFFFFF"
+        android:backgroundTint="@color/primary"
         android:layout_margin="16dp" />
 
 </LinearLayout>
