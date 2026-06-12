@@ -8,18 +8,21 @@ import android.widget.ListView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.ValueEventListener
 
 // MainActivity representa la pantalla principal de la aplicación.
-// Desde aquí se muestra la lista de tareas guardadas, se permite navegar al formulario
-// y se administra el cierre de sesión del usuario autenticado.
+// Desde aquí se muestra la lista de tareas guardadas en Firebase,
+// se permite navegar al formulario y se administra el cierre de sesión.
 class MainActivity : AppCompatActivity() {
 
     // FirebaseAuth permite consultar el usuario actual y cerrar sesión.
     private lateinit var auth: FirebaseAuth
 
-    // Clase auxiliar encargada de guardar y recuperar tareas.
-    // Por ahora sigue usando SharedPreferences; luego la cambiaremos por Firebase Realtime Database.
-    private lateinit var taskStorage: TaskStorage
+    // Repositorio encargado de leer las tareas desde Firebase Realtime Database.
+    private lateinit var taskRepository: FirebaseTaskRepository
+
+    // Listener que escucha cambios en la base de datos en tiempo real.
+    private var taskListener: ValueEventListener? = null
 
     // Componentes visuales definidos en activity_main.xml.
     private lateinit var listTasks: ListView
@@ -29,7 +32,6 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // Inicializa Firebase Authentication.
         auth = FirebaseAuth.getInstance()
 
         // Si no existe un usuario autenticado, se redirige al login.
@@ -40,31 +42,19 @@ class MainActivity : AppCompatActivity() {
 
         setContentView(R.layout.activity_main)
 
-        // Inicializa la clase de almacenamiento local.
-        taskStorage = TaskStorage(this)
+        taskRepository = FirebaseTaskRepository()
 
-        // Relaciona las variables Kotlin con los componentes XML.
         listTasks = findViewById(R.id.listTasks)
         btnAddTask = findViewById(R.id.btnAddTask)
         btnLogout = findViewById(R.id.btnLogout)
 
         configureAddTaskButton()
         configureLogoutButton()
-    }
-
-    override fun onResume() {
-        super.onResume()
-
-        // Cada vez que la pantalla principal vuelve a estar visible,
-        // se actualiza la lista de tareas.
-        if (::taskStorage.isInitialized) {
-            loadTasks()
-        }
+        loadTasksFromFirebase()
     }
 
     private fun configureAddTaskButton() {
         btnAddTask.setOnClickListener {
-            // Intent permite navegar desde la pantalla principal hacia FormActivity.
             val intent = Intent(this, FormActivity::class.java)
             startActivity(intent)
         }
@@ -76,10 +66,18 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun loadTasks() {
-        // Obtiene las tareas almacenadas.
-        val tasks = taskStorage.getTasks()
+    private fun loadTasksFromFirebase() {
+        taskListener = taskRepository.listenTasks(
+            onTasksLoaded = { tasks ->
+                showTasks(tasks)
+            },
+            onError = { message ->
+                Toast.makeText(this, message, Toast.LENGTH_LONG).show()
+            }
+        )
+    }
 
+    private fun showTasks(tasks: List<Task>) {
         val taskTexts = if (tasks.isEmpty()) {
             listOf("No hay tareas guardadas")
         } else {
@@ -98,12 +96,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun logoutUser() {
-        // Cierra la sesión actual de Firebase.
         auth.signOut()
-
         Toast.makeText(this, "Sesión cerrada correctamente", Toast.LENGTH_SHORT).show()
-
-        // Después de cerrar sesión, vuelve al login y limpia el historial de pantallas.
         goToLogin()
     }
 
@@ -112,5 +106,15 @@ class MainActivity : AppCompatActivity() {
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         startActivity(intent)
         finish()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+
+        // Se elimina el listener para evitar que Firebase siga escuchando cambios
+        // cuando la pantalla ya fue destruida.
+        if (::taskRepository.isInitialized) {
+            taskRepository.removeTasksListener(taskListener)
+        }
     }
 }

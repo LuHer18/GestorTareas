@@ -5,22 +5,24 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-// FormActivity representa la pantalla del formulario.
-// En esta pantalla el usuario escribe el nombre y la descripción de una tarea.
+
+// FormActivity representa la pantalla donde el usuario crea una nueva tarea.
+// Los datos ingresados se guardan en Firebase Realtime Database.
 class FormActivity : AppCompatActivity() {
-    // Campos de texto y botones definidos en activity_form.xml.
+
     private lateinit var etTaskName: EditText
     private lateinit var etTaskDescription: EditText
     private lateinit var btnSaveTask: Button
     private lateinit var btnBack: Button
-    // Clase responsable de almacenar la tarea en SharedPreferences.
-    private lateinit var taskStorage: TaskStorage
+
+    // Repositorio encargado de guardar las tareas en Firebase.
+    private lateinit var taskRepository: FirebaseTaskRepository
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_form)
-        // Inicializa el almacenamiento local.
-        taskStorage = TaskStorage(this)
+
+        taskRepository = FirebaseTaskRepository()
 
         etTaskName = findViewById(R.id.etTaskName)
         etTaskDescription = findViewById(R.id.etTaskDescription)
@@ -44,24 +46,36 @@ class FormActivity : AppCompatActivity() {
     }
 
     private fun saveTask() {
-        // Obtiene los valores escritos por el usuario y elimina espacios innecesarios.
         val name = etTaskName.text.toString().trim()
         val description = etTaskDescription.text.toString().trim()
 
         if (name.isEmpty()) {
-            Toast.makeText(this, "Ingresa el nombre de la tarea", Toast.LENGTH_SHORT).show()
+            etTaskName.error = "Ingresa el nombre de la tarea"
             return
         }
 
         if (description.isEmpty()) {
-            Toast.makeText(this, "Ingresa la descripción de la tarea", Toast.LENGTH_SHORT).show()
+            etTaskDescription.error = "Ingresa la descripción de la tarea"
             return
         }
 
-        val task = Task(name, description)
-        taskStorage.saveTask(task)
+        val task = Task(
+            name = name,
+            description = description
+        )
 
-        Toast.makeText(this, "Tarea guardada correctamente", Toast.LENGTH_SHORT).show()
-        finish()
+        btnSaveTask.isEnabled = false
+
+        taskRepository.saveTask(
+            task = task,
+            onSuccess = {
+                Toast.makeText(this, "Tarea guardada correctamente", Toast.LENGTH_SHORT).show()
+                finish()
+            },
+            onError = { message ->
+                btnSaveTask.isEnabled = true
+                Toast.makeText(this, message, Toast.LENGTH_LONG).show()
+            }
+        )
     }
 }
