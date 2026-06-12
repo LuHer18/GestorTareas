@@ -25,6 +25,13 @@
         android:text="Agregar Nueva Tarea"
         android:textSize="16sp"
         android:layout_marginBottom="12dp" />
+    <Button
+        android:id="@+id/btnOpenMap"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Ver mi ubicación"
+        android:textSize="16sp"
+        android:layout_marginBottom="12dp" />
 
     <Button
         android:id="@+id/btnLogout"

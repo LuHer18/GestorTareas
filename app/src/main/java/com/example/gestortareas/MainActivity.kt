@@ -29,6 +29,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var listTasks: ListView
     private lateinit var btnAddTask: Button
     private lateinit var btnLogout: Button
+    private lateinit var btnOpenMap: Button
     private val currentTasks = mutableListOf<Task>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -49,10 +50,12 @@ class MainActivity : AppCompatActivity() {
         listTasks = findViewById(R.id.listTasks)
         btnAddTask = findViewById(R.id.btnAddTask)
         btnLogout = findViewById(R.id.btnLogout)
+        btnOpenMap = findViewById(R.id.btnOpenMap)
 
         configureAddTaskButton()
         configureLogoutButton()
         configureTaskListClick()
+        configureMapButton()
         loadTasksFromFirebase()
     }
 
@@ -177,5 +180,11 @@ class MainActivity : AppCompatActivity() {
                 Toast.makeText(this, message, Toast.LENGTH_LONG).show()
             }
         )
+    }
+    private fun configureMapButton() {
+        btnOpenMap.setOnClickListener {
+            val intent = Intent(this, MapActivity::class.java)
+            startActivity(intent)
+        }
     }
 }
