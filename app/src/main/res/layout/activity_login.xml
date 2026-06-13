@@ -16,7 +16,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Gestor de Tareas"
+            android:text="@string/app_title"
             android:textColor="@color/text_primary"
             android:textSize="30sp"
             android:textStyle="bold"
@@ -26,7 +26,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Organiza tus tareas de forma segura con Firebase"
+            android:text="@string/login_subtitle"
             android:textColor="@color/text_secondary"
             android:textSize="16sp"
             android:gravity="center"
@@ -42,7 +42,7 @@
                 android:id="@+id/etEmail"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Correo electrónico"
+                android:hint="@string/hint_email"
                 android:inputType="textEmailAddress"
                 android:background="@drawable/bg_input"
                 android:textColor="@color/text_primary"
@@ -53,7 +53,7 @@
                 android:id="@+id/etPassword"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Contraseña"
+                android:hint="@string/hint_password"
                 android:inputType="textPassword"
                 android:background="@drawable/bg_input"
                 android:textColor="@color/text_primary"
@@ -64,9 +64,9 @@
                 android:id="@+id/btnLogin"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Iniciar Sesión"
+                android:text="@string/action_login"
                 android:textSize="16sp"
-                android:textColor="#FFFFFF"
+                android:textColor="@color/surface"
                 android:backgroundTint="@color/primary"
                 android:layout_marginBottom="12dp" />
 
@@ -74,9 +74,9 @@
                 android:id="@+id/btnRegister"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Crear cuenta"
+                android:text="@string/action_register"
                 android:textSize="16sp"
-                android:textColor="#FFFFFF"
+                android:textColor="@color/surface"
                 android:backgroundTint="@color/secondary" />
 
         </LinearLayout>

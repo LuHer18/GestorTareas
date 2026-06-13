@@ -63,12 +63,12 @@ class FormActivity : AppCompatActivity() {
         // Se validan los campos antes de crear el objeto Task para evitar guardar
         // información incompleta en Firebase.
         if (name.isEmpty()) {
-            etTaskName.error = "Ingresa el nombre de la tarea"
+            etTaskName.error = getString(R.string.error_task_name_required)
             return
         }
 
         if (description.isEmpty()) {
-            etTaskDescription.error = "Ingresa la descripción de la tarea"
+            etTaskDescription.error = getString(R.string.error_task_description_required)
             return
         }
 
@@ -97,8 +97,8 @@ class FormActivity : AppCompatActivity() {
             // modifique solo lo necesario.
             etTaskName.setText(taskName)
             etTaskDescription.setText(taskDescription)
-            btnSaveTask.text = "Actualizar tarea"
-            tvFormTitle.text = "Editar tarea"
+            btnSaveTask.text = getString(R.string.action_update_task)
+            tvFormTitle.text = getString(R.string.edit_task_title)
         }
     }
     private fun createNewTask(name: String, description: String) {
@@ -112,7 +112,7 @@ class FormActivity : AppCompatActivity() {
         taskRepository.saveTask(
             task = task,
             onSuccess = {
-                Toast.makeText(this, "Tarea guardada correctamente", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, getString(R.string.task_saved_success), Toast.LENGTH_SHORT).show()
                 finish()
             },
             onError = { message ->
@@ -134,7 +134,7 @@ class FormActivity : AppCompatActivity() {
         taskRepository.updateTask(
             task = task,
             onSuccess = {
-                Toast.makeText(this, "Tarea actualizada correctamente", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, getString(R.string.task_updated_success), Toast.LENGTH_SHORT).show()
                 finish()
             },
             onError = { message ->

@@ -61,7 +61,10 @@ class MainActivity : AppCompatActivity() {
         tvUserEmail = findViewById(R.id.tvUserEmail)
         tvEmptyState = findViewById(R.id.tvEmptyState)
 
-        tvUserEmail.text = "Sesión: ${auth.currentUser?.email ?: "Usuario autenticado"}"
+        tvUserEmail.text = getString(
+            R.string.session_email,
+            auth.currentUser?.email ?: getString(R.string.authenticated_user)
+        )
 
         configureAddTaskButton()
         configureLogoutButton()
@@ -128,7 +131,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun logoutUser() {
         auth.signOut()
-        Toast.makeText(this, "Sesión cerrada correctamente", Toast.LENGTH_SHORT).show()
+        Toast.makeText(this, getString(R.string.logout_success), Toast.LENGTH_SHORT).show()
         goToLogin()
     }
 
@@ -166,14 +169,14 @@ class MainActivity : AppCompatActivity() {
         // disponibles para una tarea: editar, eliminar o cancelar.
         AlertDialog.Builder(this)
             .setTitle(task.name)
-            .setMessage("Selecciona una acción para esta tarea.")
-            .setPositiveButton("Editar") { _, _ ->
+            .setMessage(getString(R.string.task_options_message))
+            .setPositiveButton(getString(R.string.action_edit)) { _, _ ->
                 goToEditTask(task)
             }
-            .setNegativeButton("Eliminar") { _, _ ->
+            .setNegativeButton(getString(R.string.action_delete)) { _, _ ->
                 confirmDeleteTask(task)
             }
-            .setNeutralButton("Cancelar", null)
+            .setNeutralButton(getString(R.string.action_cancel), null)
             .show()
     }
 
@@ -192,12 +195,12 @@ class MainActivity : AppCompatActivity() {
         // La eliminación se confirma antes de ejecutarse porque borra datos persistentes
         // en Firebase y no solo información temporal de la pantalla.
         AlertDialog.Builder(this)
-            .setTitle("Eliminar tarea")
-            .setMessage("¿Deseas eliminar la tarea \"${task.name}\"?")
-            .setPositiveButton("Eliminar") { _, _ ->
+            .setTitle(getString(R.string.delete_task_title))
+            .setMessage(getString(R.string.delete_task_confirmation, task.name))
+            .setPositiveButton(getString(R.string.action_delete)) { _, _ ->
                 deleteTask(task)
             }
-            .setNegativeButton("Cancelar", null)
+            .setNegativeButton(getString(R.string.action_cancel), null)
             .show()
     }
 
@@ -207,7 +210,7 @@ class MainActivity : AppCompatActivity() {
         taskRepository.deleteTask(
             taskId = task.id,
             onSuccess = {
-                Toast.makeText(this, "Tarea eliminada correctamente", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, getString(R.string.task_deleted_success), Toast.LENGTH_SHORT).show()
             },
             onError = { message ->
                 Toast.makeText(this, message, Toast.LENGTH_LONG).show()

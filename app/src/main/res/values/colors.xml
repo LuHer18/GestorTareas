@@ -8,4 +8,5 @@
     <color name="text_primary">#1F2937</color>
     <color name="text_secondary">#6B7280</color>
     <color name="danger">#DC2626</color>
+    <color name="button_neutral">#E5E7EB</color>
 </resources>

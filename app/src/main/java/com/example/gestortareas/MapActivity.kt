@@ -103,7 +103,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
                     googleMap.addMarker(
                         MarkerOptions()
                             .position(currentLatLng)
-                            .title("Tu ubicación actual")
+                            .title(getString(R.string.current_location_marker))
                     )
 
                     googleMap.moveCamera(
@@ -112,7 +112,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
                 } else {
                     Toast.makeText(
                         this,
-                        "No se pudo obtener la ubicación actual",
+                        getString(R.string.current_location_unavailable),
                         Toast.LENGTH_LONG
                     ).show()
                 }
@@ -120,7 +120,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
             .addOnFailureListener {
                 Toast.makeText(
                     this,
-                    "Error al obtener la ubicación",
+                    getString(R.string.current_location_error),
                     Toast.LENGTH_LONG
                 ).show()
             }
@@ -140,7 +140,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
             } else {
                 Toast.makeText(
                     this,
-                    "Permiso de ubicación denegado",
+                    getString(R.string.location_permission_denied),
                     Toast.LENGTH_LONG
                 ).show()
             }

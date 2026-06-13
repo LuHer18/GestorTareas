@@ -58,12 +58,12 @@ class LoginActivity : AppCompatActivity() {
         auth.signInWithEmailAndPassword(email, password)
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
-                    Toast.makeText(this, "Inicio de sesión exitoso", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, getString(R.string.login_success), Toast.LENGTH_SHORT).show()
                     goToMainActivity()
                 } else {
                     Toast.makeText(
                         this,
-                        "Error al iniciar sesión: ${task.exception?.message}",
+                        getString(R.string.login_error, task.exception?.message),
                         Toast.LENGTH_LONG
                     ).show()
                 }
@@ -81,12 +81,12 @@ class LoginActivity : AppCompatActivity() {
         auth.createUserWithEmailAndPassword(email, password)
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
-                    Toast.makeText(this, "Usuario registrado correctamente", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, getString(R.string.register_success), Toast.LENGTH_SHORT).show()
                     goToMainActivity()
                 } else {
                     Toast.makeText(
                         this,
-                        "Error al registrar usuario: ${task.exception?.message}",
+                        getString(R.string.register_error, task.exception?.message),
                         Toast.LENGTH_LONG
                     ).show()
                 }
@@ -97,17 +97,17 @@ class LoginActivity : AppCompatActivity() {
         // Las validaciones se separan en una función para mantener más claros
         // los flujos de inicio de sesión y registro.
         if (email.isEmpty()) {
-            etEmail.error = "Ingresa el correo electrónico"
+            etEmail.error = getString(R.string.error_email_required)
             return false
         }
 
         if (password.isEmpty()) {
-            etPassword.error = "Ingresa la contraseña"
+            etPassword.error = getString(R.string.error_password_required)
             return false
         }
 
         if (password.length < 6) {
-            etPassword.error = "La contraseña debe tener mínimo 6 caracteres"
+            etPassword.error = getString(R.string.error_password_min_length)
             return false
         }
 

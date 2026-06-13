@@ -16,7 +16,7 @@
             android:id="@+id/tvFormTitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Nueva tarea"
+            android:text="@string/new_task_title"
             android:textSize="28sp"
             android:textStyle="bold"
             android:textColor="@color/text_primary"
@@ -27,7 +27,7 @@
             android:id="@+id/tvFormSubtitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Completa la información para guardar la tarea"
+            android:text="@string/form_subtitle"
             android:textSize="15sp"
             android:textColor="@color/text_secondary"
             android:gravity="center"
@@ -42,7 +42,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Nombre de la tarea"
+                android:text="@string/task_name_label"
                 android:textSize="14sp"
                 android:textStyle="bold"
                 android:textColor="@color/text_primary"
@@ -52,7 +52,7 @@
                 android:id="@+id/etTaskName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Ejemplo: Estudiar Kotlin"
+                android:hint="@string/hint_task_name"
                 android:inputType="text"
                 android:background="@drawable/bg_input"
                 android:textColor="@color/text_primary"
@@ -62,7 +62,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Descripción"
+                android:text="@string/task_description_label"
                 android:textSize="14sp"
                 android:textStyle="bold"
                 android:textColor="@color/text_primary"
@@ -72,7 +72,7 @@
                 android:id="@+id/etTaskDescription"
                 android:layout_width="match_parent"
                 android:layout_height="140dp"
-                android:hint="Describe brevemente la tarea"
+                android:hint="@string/hint_task_description"
                 android:inputType="textMultiLine"
                 android:gravity="top"
                 android:background="@drawable/bg_input"
@@ -84,9 +84,9 @@
                 android:id="@+id/btnSaveTask"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Guardar tarea"
+                android:text="@string/action_save_task"
                 android:textSize="16sp"
-                android:textColor="#FFFFFF"
+                android:textColor="@color/surface"
                 android:backgroundTint="@color/primary"
                 android:layout_marginBottom="12dp" />
 
@@ -94,10 +94,10 @@
                 android:id="@+id/btnBack"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Volver"
+                android:text="@string/action_back"
                 android:textSize="16sp"
                 android:textColor="@color/text_primary"
-                android:backgroundTint="#E5E7EB" />
+                android:backgroundTint="@color/button_neutral" />
 
         </LinearLayout>
 
