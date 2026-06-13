@@ -16,3 +16,4 @@ local.properties
 /app/google-services.json
 .idea/deviceManager.xml
 .idea/vcs.xml
+.atl/
