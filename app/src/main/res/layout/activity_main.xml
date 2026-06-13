@@ -5,35 +5,89 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="20dp"
-    android:background="#F5F7FA">
+    android:background="@drawable/bg_screen">
 
     <TextView
         android:id="@+id/tvTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Gestor de Tareas"
-        android:textSize="26sp"
+        android:text="@string/app_title"
+        android:textSize="28sp"
         android:textStyle="bold"
-        android:textColor="#1F2937"
+        android:textColor="@color/text_primary"
+        android:gravity="center" />
+
+    <TextView
+        android:id="@+id/tvUserEmail"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/session_started"
+        android:textSize="14sp"
+        android:textColor="@color/text_secondary"
         android:gravity="center"
+        android:layout_marginTop="4dp"
         android:layout_marginBottom="20dp" />
 
     <Button
         android:id="@+id/btnAddTask"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Agregar Nueva Tarea"
+        android:text="@string/action_add_task"
         android:textSize="16sp"
+        android:textColor="@color/surface"
+        android:backgroundTint="@color/primary"
+        android:layout_marginBottom="10dp" />
+
+    <Button
+        android:id="@+id/btnOpenMap"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/action_view_location"
+        android:textSize="16sp"
+        android:textColor="@color/surface"
+        android:backgroundTint="@color/secondary"
+        android:layout_marginBottom="10dp" />
+
+    <Button
+        android:id="@+id/btnLogout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/action_logout"
+        android:textSize="16sp"
+        android:textColor="@color/surface"
+        android:backgroundTint="@color/danger"
         android:layout_marginBottom="20dp" />
 
     <TextView
         android:id="@+id/tvSubtitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Tareas guardadas"
-        android:textSize="18sp"
+        android:text="@string/saved_tasks_title"
+        android:textSize="19sp"
         android:textStyle="bold"
-        android:textColor="#374151"
+        android:textColor="@color/text_primary"
+        android:layout_marginBottom="4dp" />
+
+    <TextView
+        android:id="@+id/tvInstruction"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/task_list_instruction"
+        android:textSize="14sp"
+        android:textColor="@color/text_secondary"
+        android:layout_marginBottom="10dp" />
+
+    <TextView
+        android:id="@+id/tvEmptyState"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/empty_tasks_message"
+        android:textSize="15sp"
+        android:textColor="@color/text_secondary"
+        android:gravity="center"
+        android:padding="18dp"
+        android:background="@drawable/bg_card"
+        android:visibility="gone"
         android:layout_marginBottom="10dp" />
 
     <ListView
@@ -41,6 +95,7 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:dividerHeight="8dp" />
+        android:dividerHeight="10dp"
+        android:background="@android:color/transparent" />
 
 </LinearLayout>
