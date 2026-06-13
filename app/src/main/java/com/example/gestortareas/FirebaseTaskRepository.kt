@@ -7,7 +7,8 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 
 // Clase encargada de centralizar las operaciones con Firebase Realtime Database.
-// Aquí se guardan y consultan las tareas del usuario autenticado.
+// Separar esta lógica en un repositorio evita que las Activities conozcan detalles
+// internos de Firebase y deja la interfaz de usuario más enfocada en mostrar datos.
 class FirebaseTaskRepository {
 
     private val auth = FirebaseAuth.getInstance()
@@ -19,12 +20,15 @@ class FirebaseTaskRepository {
         .reference
 
     // Obtiene el UID del usuario autenticado.
-    // Este UID permite guardar las tareas separadas por usuario.
+    // El UID es clave en la estructura de datos porque permite guardar las tareas
+    // separadas por usuario dentro del nodo tasks/{uid}.
     private fun getCurrentUserId(): String? {
         return auth.currentUser?.uid
     }
 
     // Guarda una nueva tarea dentro del nodo tasks/{uid}.
+    // Recibe callbacks para avisar a la Activity si la operación terminó bien o falló,
+    // ya que las operaciones con Firebase se ejecutan de forma asíncrona.
     fun saveTask(
         task: Task,
         onSuccess: () -> Unit,
@@ -37,6 +41,8 @@ class FirebaseTaskRepository {
             return
         }
 
+        // push() crea una referencia nueva con un ID único generado por Firebase.
+        // Ese ID se guarda también dentro del objeto para poder editarlo o eliminarlo después.
         val taskReference = database
             .child("tasks")
             .child(uid)
@@ -51,6 +57,8 @@ class FirebaseTaskRepository {
 
         task.id = taskId
 
+        // setValue escribe el objeto completo en la base de datos.
+        // Los listeners permiten reaccionar al resultado sin bloquear la pantalla.
         taskReference.setValue(task)
             .addOnSuccessListener {
                 onSuccess()
@@ -60,6 +68,8 @@ class FirebaseTaskRepository {
             }
     }
     // Actualiza una tarea existente en Firebase usando su ID.
+    // A diferencia de saveTask, aquí no se usa push() porque la tarea ya tiene
+    // una ubicación fija dentro de Firebase.
     fun updateTask(
         task: Task,
         onSuccess: () -> Unit,
@@ -91,6 +101,7 @@ class FirebaseTaskRepository {
     }
 
     // Elimina una tarea de Firebase usando el ID de la tarea.
+    // Primero se comprueba el usuario y el ID para evitar borrar una ruta incorrecta.
     fun deleteTask(
         taskId: String,
         onSuccess: () -> Unit,
@@ -121,7 +132,8 @@ class FirebaseTaskRepository {
             }
     }
     // Escucha en tiempo real las tareas del usuario autenticado.
-    // Cada vez que se agrega, cambia o elimina una tarea, Firebase actualiza la lista.
+    // Cada vez que se agrega, cambia o elimina una tarea, Firebase ejecuta onDataChange
+    // y entrega una nueva fotografía completa del nodo tasks/{uid}.
     fun listenTasks(
         onTasksLoaded: (List<Task>) -> Unit,
         onError: (String) -> Unit
@@ -141,10 +153,14 @@ class FirebaseTaskRepository {
             override fun onDataChange(snapshot: DataSnapshot) {
                 val tasks = mutableListOf<Task>()
 
+                // Cada hijo del snapshot representa una tarea guardada bajo el UID actual.
+                // getValue convierte los datos de Firebase nuevamente en un objeto Task.
                 for (taskSnapshot in snapshot.children) {
                     val task = taskSnapshot.getValue(Task::class.java)
 
                     if (task != null) {
+                        // El ID no siempre viene dentro del objeto, por eso se recupera
+                        // desde la clave del nodo para conservar la referencia real en Firebase.
                         task.id = taskSnapshot.key ?: ""
                         tasks.add(task)
                     }
@@ -163,6 +179,7 @@ class FirebaseTaskRepository {
     }
 
     // Remueve el listener para evitar fugas de memoria cuando se destruye la pantalla.
+    // Si no se elimina, Firebase podría seguir enviando cambios a una Activity que ya no existe.
     fun removeTasksListener(listener: ValueEventListener?) {
         val uid = getCurrentUserId()
 

@@ -8,8 +8,12 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
 
+// LoginActivity concentra el flujo de autenticación de la aplicación.
+// Desde esta pantalla el usuario puede iniciar sesión o crear una cuenta
+// usando Firebase Authentication con correo y contraseña.
 class LoginActivity : AppCompatActivity() {
 
+    // FirebaseAuth administra la sesión actual y las operaciones de login/registro.
     private lateinit var auth: FirebaseAuth
     private lateinit var etEmail: EditText
     private lateinit var etPassword: EditText
@@ -27,7 +31,8 @@ class LoginActivity : AppCompatActivity() {
         btnLogin = findViewById(R.id.btnLogin)
         btnRegister = findViewById(R.id.btnRegister)
 
-        // Si el usuario ya inició sesión anteriormente, entra directamente a la app.
+        // Firebase mantiene la sesión iniciada entre aperturas de la app.
+        // Por eso, si ya existe un usuario autenticado, no es necesario pedir login otra vez.
         if (auth.currentUser != null) {
             goToMainActivity()
         }
@@ -45,8 +50,11 @@ class LoginActivity : AppCompatActivity() {
         val email = etEmail.text.toString().trim()
         val password = etPassword.text.toString().trim()
 
+        // Antes de llamar a Firebase se validan los campos para evitar solicitudes inválidas.
         if (!validateFields(email, password)) return
 
+        // signInWithEmailAndPassword es una operación asíncrona: el resultado llega
+        // en el listener cuando Firebase termina de comprobar las credenciales.
         auth.signInWithEmailAndPassword(email, password)
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
@@ -66,8 +74,10 @@ class LoginActivity : AppCompatActivity() {
         val email = etEmail.text.toString().trim()
         val password = etPassword.text.toString().trim()
 
+        // Se reutiliza la misma validación porque login y registro necesitan datos válidos.
         if (!validateFields(email, password)) return
 
+        // Al crear el usuario correctamente, Firebase también deja la sesión iniciada.
         auth.createUserWithEmailAndPassword(email, password)
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
@@ -84,6 +94,8 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun validateFields(email: String, password: String): Boolean {
+        // Las validaciones se separan en una función para mantener más claros
+        // los flujos de inicio de sesión y registro.
         if (email.isEmpty()) {
             etEmail.error = "Ingresa el correo electrónico"
             return false
@@ -104,6 +116,9 @@ class LoginActivity : AppCompatActivity() {
 
     private fun goToMainActivity() {
         val intent = Intent(this, MainActivity::class.java)
+
+        // Estas banderas limpian el historial de pantallas para que el usuario
+        // no pueda volver al login presionando el botón Atrás después de autenticarse.
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         startActivity(intent)
         finish()

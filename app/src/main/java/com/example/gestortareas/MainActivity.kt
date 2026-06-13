@@ -34,6 +34,9 @@ class MainActivity : AppCompatActivity() {
     private lateinit var btnOpenMap: Button
     private lateinit var tvUserEmail: TextView
     private lateinit var tvEmptyState: TextView
+
+    // Mantiene en memoria las tareas cargadas para poder identificar cuál selecciona
+    // el usuario en el ListView y enviarla al flujo de edición o eliminación.
     private val currentTasks = mutableListOf<Task>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -81,6 +84,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun loadTasksFromFirebase() {
+        // Se guarda la referencia del listener para poder removerlo en onDestroy.
+        // Esto es importante porque Firebase escucha cambios en tiempo real.
         taskListener = taskRepository.listenTasks(
             onTasksLoaded = { tasks ->
                 showTasks(tasks)
@@ -92,10 +97,13 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun showTasks(tasks: List<Task>) {
+        // Se sincroniza la lista visual con una lista de objetos Task completos.
+        // El ListView solo muestra texto, pero para editar o eliminar se necesita el objeto original.
         currentTasks.clear()
         currentTasks.addAll(tasks)
 
         if (tasks.isEmpty()) {
+            // Si no hay tareas se muestra un estado vacío en lugar de una lista sin contenido.
             tvEmptyState.visibility = View.VISIBLE
             listTasks.visibility = View.GONE
             return
@@ -108,6 +116,7 @@ class MainActivity : AppCompatActivity() {
             "${task.name}\n${task.description}"
         }
 
+        // ArrayAdapter convierte la lista de textos en filas visibles dentro del ListView.
         val adapter = ArrayAdapter(
             this,
             android.R.layout.simple_list_item_1,
@@ -145,12 +154,16 @@ class MainActivity : AppCompatActivity() {
                 return@setOnItemClickListener
             }
 
+            // La posición tocada en el ListView coincide con la posición del objeto
+            // dentro de currentTasks, por eso se puede recuperar la tarea seleccionada.
             val selectedTask = currentTasks[position]
             showTaskOptionsDialog(selectedTask)
         }
     }
 
     private fun showTaskOptionsDialog(task: Task) {
+        // El diálogo evita crear botones extra en cada fila y concentra las acciones
+        // disponibles para una tarea: editar, eliminar o cancelar.
         AlertDialog.Builder(this)
             .setTitle(task.name)
             .setMessage("Selecciona una acción para esta tarea.")
@@ -166,6 +179,9 @@ class MainActivity : AppCompatActivity() {
 
     private fun goToEditTask(task: Task) {
         val intent = Intent(this, FormActivity::class.java)
+
+        // Se envían los datos actuales de la tarea para que FormActivity pueda
+        // abrirse en modo edición y precargar el formulario.
         intent.putExtra("task_id", task.id)
         intent.putExtra("task_name", task.name)
         intent.putExtra("task_description", task.description)
@@ -173,6 +189,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun confirmDeleteTask(task: Task) {
+        // La eliminación se confirma antes de ejecutarse porque borra datos persistentes
+        // en Firebase y no solo información temporal de la pantalla.
         AlertDialog.Builder(this)
             .setTitle("Eliminar tarea")
             .setMessage("¿Deseas eliminar la tarea \"${task.name}\"?")
@@ -184,6 +202,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun deleteTask(task: Task) {
+        // La lista se actualizará automáticamente cuando Firebase notifique el cambio
+        // al listener configurado en loadTasksFromFirebase.
         taskRepository.deleteTask(
             taskId = task.id,
             onSuccess = {
