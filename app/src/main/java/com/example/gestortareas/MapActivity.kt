@@ -60,32 +60,47 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
     private fun checkLocationPermission() {
-        val permissionGranted = ActivityCompat.checkSelfPermission(
-            this,
-            Manifest.permission.ACCESS_FINE_LOCATION
-        ) == PackageManager.PERMISSION_GRANTED
-
-        if (permissionGranted) {
+        if (hasPreciseLocationPermission()) {
             showCurrentLocation()
         } else {
-            // Desde Android 6.0 los permisos peligrosos, como ubicación precisa,
-            // deben solicitarse mientras la aplicación está en ejecución.
+            // Android 12+ requiere solicitar coarse junto con fine para el flujo de ubicación precisa.
             ActivityCompat.requestPermissions(
                 this,
-                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+                arrayOf(
+                    Manifest.permission.ACCESS_COARSE_LOCATION,
+                    Manifest.permission.ACCESS_FINE_LOCATION
+                ),
                 LOCATION_PERMISSION_REQUEST_CODE
             )
         }
     }
 
+    private fun hasPreciseLocationPermission(): Boolean {
+        val coarseGranted = ActivityCompat.checkSelfPermission(
+            this,
+            Manifest.permission.ACCESS_COARSE_LOCATION
+        ) == PackageManager.PERMISSION_GRANTED
+        val fineGranted = ActivityCompat.checkSelfPermission(
+            this,
+            Manifest.permission.ACCESS_FINE_LOCATION
+        ) == PackageManager.PERMISSION_GRANTED
+
+        return coarseGranted && fineGranted
+    }
+
     private fun showCurrentLocation() {
         // Se vuelve a verificar el permiso para proteger esta función si se llama
         // desde otro punto del ciclo de vida o después de que el permiso cambie.
-        if (ActivityCompat.checkSelfPermission(
-                this,
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
+        val coarseGranted = ActivityCompat.checkSelfPermission(
+            this,
+            Manifest.permission.ACCESS_COARSE_LOCATION
+        ) == PackageManager.PERMISSION_GRANTED
+        val fineGranted = ActivityCompat.checkSelfPermission(
+            this,
+            Manifest.permission.ACCESS_FINE_LOCATION
+        ) == PackageManager.PERMISSION_GRANTED
+
+        if (!coarseGranted || !fineGranted) {
             return
         }
 
@@ -134,7 +149,14 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
 
         if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
-            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            val grantedPermissions = permissions
+                .zip(grantResults.toTypedArray())
+                .toMap()
+            val preciseLocationGranted =
+                grantedPermissions[Manifest.permission.ACCESS_COARSE_LOCATION] == PackageManager.PERMISSION_GRANTED &&
+                    grantedPermissions[Manifest.permission.ACCESS_FINE_LOCATION] == PackageManager.PERMISSION_GRANTED
+
+            if (preciseLocationGranted) {
                 // Si el usuario concede el permiso, recién aquí se puede mostrar la ubicación.
                 showCurrentLocation()
             } else {

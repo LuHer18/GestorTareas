@@ -12,6 +12,11 @@ import android.widget.TextView
 // con formularios casi idénticos.
 class FormActivity : AppCompatActivity() {
 
+    companion object {
+        private const val MAX_TASK_NAME_LENGTH = 100
+        private const val MAX_TASK_DESCRIPTION_LENGTH = 500
+    }
+
     private lateinit var etTaskName: EditText
     private lateinit var etTaskDescription: EditText
     private lateinit var btnSaveTask: Button
@@ -67,8 +72,18 @@ class FormActivity : AppCompatActivity() {
             return
         }
 
+        if (name.length > MAX_TASK_NAME_LENGTH) {
+            etTaskName.error = getString(R.string.error_task_name_max_length)
+            return
+        }
+
         if (description.isEmpty()) {
             etTaskDescription.error = getString(R.string.error_task_description_required)
+            return
+        }
+
+        if (description.length > MAX_TASK_DESCRIPTION_LENGTH) {
+            etTaskDescription.error = getString(R.string.error_task_description_max_length)
             return
         }
 

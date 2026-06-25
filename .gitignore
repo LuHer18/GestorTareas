@@ -1,5 +1,7 @@
 *.iml
 .gradle
+.idea/
+.kotlin/
 /local.properties
 /.idea/caches
 /.idea/libraries
@@ -17,3 +19,4 @@ local.properties
 .idea/deviceManager.xml
 .idea/vcs.xml
 .atl/
+*.zip

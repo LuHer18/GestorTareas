@@ -28,10 +28,14 @@
     <string name="register_success">Usuario registrado correctamente</string>
     <string name="register_error">Error al registrar usuario: %1$s</string>
     <string name="error_email_required">Ingresa el correo electrónico</string>
+    <string name="error_email_invalid">Ingresa un correo electrónico válido</string>
     <string name="error_password_required">Ingresa la contraseña</string>
     <string name="error_password_min_length">La contraseña debe tener mínimo 6 caracteres</string>
+    <string name="error_password_max_length">La contraseña no debe superar 128 caracteres</string>
     <string name="error_task_name_required">Ingresa el nombre de la tarea</string>
+    <string name="error_task_name_max_length">El nombre de la tarea no debe superar 100 caracteres</string>
     <string name="error_task_description_required">Ingresa la descripción de la tarea</string>
+    <string name="error_task_description_max_length">La descripción no debe superar 500 caracteres</string>
     <string name="edit_task_title">Editar tarea</string>
     <string name="action_update_task">Actualizar tarea</string>
     <string name="task_saved_success">Tarea guardada correctamente</string>

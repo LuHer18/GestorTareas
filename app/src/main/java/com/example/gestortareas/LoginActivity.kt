@@ -2,6 +2,7 @@ package com.example.gestortareas
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Patterns
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
@@ -12,6 +13,11 @@ import com.google.firebase.auth.FirebaseAuth
 // Desde esta pantalla el usuario puede iniciar sesión o crear una cuenta
 // usando Firebase Authentication con correo y contraseña.
 class LoginActivity : AppCompatActivity() {
+
+    companion object {
+        private const val MIN_PASSWORD_LENGTH = 6
+        private const val MAX_PASSWORD_LENGTH = 128
+    }
 
     // FirebaseAuth administra la sesión actual y las operaciones de login/registro.
     private lateinit var auth: FirebaseAuth
@@ -101,13 +107,23 @@ class LoginActivity : AppCompatActivity() {
             return false
         }
 
+        if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            etEmail.error = getString(R.string.error_email_invalid)
+            return false
+        }
+
         if (password.isEmpty()) {
             etPassword.error = getString(R.string.error_password_required)
             return false
         }
 
-        if (password.length < 6) {
+        if (password.length < MIN_PASSWORD_LENGTH) {
             etPassword.error = getString(R.string.error_password_min_length)
+            return false
+        }
+
+        if (password.length > MAX_PASSWORD_LENGTH) {
+            etPassword.error = getString(R.string.error_password_max_length)
             return false
         }
 
